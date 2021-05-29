@@ -1,0 +1,1 @@
+[![Chrome Tests](https://github.com/ftreesmilo/storage-foundation-tests/actions/workflows/chrome-tests.yml/badge.svg)](https://github.com/ftreesmilo/storage-foundation-tests/actions/workflows/chrome-tests.yml)
