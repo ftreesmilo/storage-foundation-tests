@@ -1,4 +1,4 @@
-name: Node.js CI
+name: Chrome Tests
 
 on:
   push:
@@ -13,7 +13,11 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [14.x]
+        node-version:
+          - 14.x
+        chrome-version:
+          - stable
+          - beta
 
     steps:
       - uses: actions/checkout@v2
@@ -23,7 +27,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - uses: browser-actions/setup-chrome@latest
         with:
-          chrome-version: stable
+          chrome-version: ${{ matrix.chrome-version }}
       - run: npm ci
       - run: which chrome
       - run: chrome --version
