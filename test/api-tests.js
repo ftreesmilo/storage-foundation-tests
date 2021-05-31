@@ -1,7 +1,7 @@
 import Promise from 'bluebird';
 import chai from 'chai';
 import asPromised from 'chai-as-promised';
-import NativeIOFileManager from '../NativeIOFileManager.js';
+import NativeIOFileManager from 'storage-foundation-chunk-store/NativeIOFileManager.js';
 
 const {
   open,
@@ -47,8 +47,7 @@ describe('api', function () {
   it('does not count unwritten files toward capacity', async function () {
     const name = filename(this.test.fullTitle());
     expect(await requestCapacity(1024)).to.equal(1024);
-    const file = await open(name);
-    await file.close();
+    await Promise.using(open(name), async () => {});
     expect(await getRemainingCapacity()).to.equal(1024);
     await deleteFile(name);
     expect(await releaseCapacity(1024)).to.equal(0);
@@ -57,9 +56,7 @@ describe('api', function () {
   it('counts files with length toward capacity', async function () {
     const name = filename(this.test.fullTitle());
     expect(await requestCapacity(1024)).to.equal(1024);
-    const file = await open(name);
-    await file.setLength(1024);
-    await file.close();
+    await Promise.using(open(name), (file) => file.setLength(1024));
     expect(await getRemainingCapacity()).to.equal(0);
     await deleteFile(name);
     expect(await getRemainingCapacity()).to.equal(1024);
@@ -69,10 +66,10 @@ describe('api', function () {
   it('accounts for written capacity write (start of file)', async function () {
     const name = filename(this.test.fullTitle());
     expect(await requestCapacity(1024)).to.equal(1024);
-    const file = await open(name);
-    const { writtenBytes } = await file.write(Buffer.alloc(512, 0xDD), 0);
-    expect(writtenBytes).to.equal(512);
-    await file.close();
+    await Promise.using(open(name), async (file) => {
+      const { writtenBytes } = await file.write(Buffer.alloc(512, 0xDD), 0);
+      expect(writtenBytes).to.equal(512);
+    });
     expect(await getRemainingCapacity()).to.equal(512);
     await deleteFile(name);
     expect(await getRemainingCapacity()).to.equal(1024);
@@ -82,10 +79,10 @@ describe('api', function () {
   it('accounts for written capacity write (end of file)', async function () {
     const name = filename(this.test.fullTitle());
     expect(await requestCapacity(1024)).to.equal(1024);
-    const file = await open(name);
-    const { writtenBytes } = await file.write(Buffer.alloc(512, 0xDD), 512);
-    expect(writtenBytes).to.equal(512);
-    await file.close();
+    await Promise.using(open(name), async (file) => {
+      const { writtenBytes } = await file.write(Buffer.alloc(512, 0xDD), 512);
+      expect(writtenBytes).to.equal(512);
+    });
     expect(await getRemainingCapacity()).to.equal(0);
     await deleteFile(name);
     expect(await getRemainingCapacity()).to.equal(1024);

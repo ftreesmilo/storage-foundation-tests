@@ -39,6 +39,7 @@
     "karma-webpack": "^5.0.0",
     "mocha": "^8.4.0",
     "regenerator-runtime": "^0.13.7",
+    "storage-foundation-chunk-store": "^2.4.2",
     "webpack": "^5.37.1"
   },
   "dependencies": {
