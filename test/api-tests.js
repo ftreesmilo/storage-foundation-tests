@@ -88,4 +88,18 @@ describe('api', function () {
     expect(await getRemainingCapacity()).to.equal(1024);
     expect(await releaseCapacity(1024)).to.equal(0);
   });
+
+  it('can be used to read while writing', async function () {
+    const name = filename(this.test.fullTitle());
+    expect(await requestCapacity(1024)).to.equal(1024);
+    await Promise.using(open(name), async (file) => {
+      const { writtenBytes } = await file.write(Buffer.alloc(512, 0xDD), 512);
+      expect(writtenBytes).to.equal(512);
+      const { buffer, readBytes } = await file.read(Buffer.alloc(512), 512);
+      expect(readBytes).to.equal(512);
+      expect(buffer).to.deep.equal(Buffer.alloc(512, 0xDD));
+    });
+    await deleteFile(name);
+    await releaseCapacity(1024);
+  });
 });
