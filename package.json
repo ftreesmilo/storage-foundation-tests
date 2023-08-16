@@ -40,7 +40,7 @@
     "mocha": "^10.0.0",
     "regenerator-runtime": "^0.13.9",
     "storage-foundation-chunk-store": "^2.4.5",
-    "webpack": "^5.72.1"
+    "webpack": "^5.76.0"
   },
   "dependencies": {
     "bluebird": "^3.7.2",
